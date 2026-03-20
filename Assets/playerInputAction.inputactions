@@ -17,7 +17,7 @@
                 },
                 {
                     "name": "Attack",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "d6a2d97c-9fa3-47e6-a0f9-88e9ea04794b",
                     "expectedControlType": "",
                     "processors": "",

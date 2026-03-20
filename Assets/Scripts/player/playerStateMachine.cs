@@ -35,6 +35,7 @@ public class PlayerStateMachine : MonoBehaviour
     private bool isDead;
     private bool isAttacking;
     private float lastAttackTime; // ????????????????????
+    private bool _attackButtonActive;
     private int currentHealth;
     private float hurtTimer;
 
@@ -70,6 +71,7 @@ public class PlayerStateMachine : MonoBehaviour
         isDead = false;
         isAttacking = false;
         currentHealth = maxHealth;
+        _attackButtonActive = false;
     }
 
     void Update()
@@ -99,6 +101,8 @@ public class PlayerStateMachine : MonoBehaviour
 
     void UpdateState()
     {
+        UpdateAttackButtonActive();
+
         if (currentState == PlayerState.Hurt)
         {
             hurtTimer -= Time.deltaTime;
@@ -128,16 +132,7 @@ public class PlayerStateMachine : MonoBehaviour
         }
 
         // ???????????????????????????????????
-        bool attackHeld = false;
-        if (attackAction != null)
-        {
-            // 用“按住”判断，避免 InputSystem 的 performed/interaction 在松开帧也触发一次
-            attackHeld = attackAction.IsPressed();
-        }
-        else
-        {
-            attackHeld = Input.GetMouseButton(0);
-        }
+        bool attackHeld = _attackButtonActive;
 
         if (attackTimer <= 0 && attackHeld && !isAttacking && Time.time - lastAttackTime > 0.05f)
         {
@@ -146,8 +141,43 @@ public class PlayerStateMachine : MonoBehaviour
             currentState = PlayerState.Attack;
             attackTimer = globalAttackCooldown;
             OnAttack();
-            Debug.Log("攻击触发：按住则持续");
+            Debug.Log("??????????????????");
         }
+    }
+
+    private void UpdateAttackButtonActive()
+    {
+        // InputSystem 模式下由 started/canceled 回调维护；此处只处理鼠标兜底模式。
+        if (attackAction != null) return;
+
+        if (Input.GetMouseButtonDown(0))
+            _attackButtonActive = true;
+        if (Input.GetMouseButtonUp(0))
+            _attackButtonActive = false;
+    }
+
+    private void OnEnable()
+    {
+        if (attackAction == null) return;
+        attackAction.started += HandleAttackStarted;
+        attackAction.canceled += HandleAttackCanceled;
+    }
+
+    private void OnDisable()
+    {
+        if (attackAction == null) return;
+        attackAction.started -= HandleAttackStarted;
+        attackAction.canceled -= HandleAttackCanceled;
+    }
+
+    private void HandleAttackStarted(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        _attackButtonActive = true;
+    }
+
+    private void HandleAttackCanceled(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        _attackButtonActive = false;
     }
 
     void OnAttack()

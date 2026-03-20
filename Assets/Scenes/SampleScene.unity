@@ -122,6 +122,73 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &233266662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 233266664}
+  - component: {fileID: 233266663}
+  m_Layer: 0
+  m_Name: Room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &233266663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233266662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d550fba5228d47429076d64acce9177, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minRoomCount: 5
+  maxRoomCount: 10
+  maxPlacementAttempts: 250
+  mapWidth: 60
+  mapHeight: 40
+  worldOrigin: {x: 0, y: 0}
+  cellSize: 1
+  generateOnStart: 1
+  instantiateOnStart: 1
+  roomWidthMin: 6
+  roomWidthMax: 14
+  roomHeightMin: 6
+  roomHeightMax: 14
+  roomPadding: 1
+  corridorWidth: 2
+  horizontalThenVertical: 1
+  generatedRoot: {fileID: 0}
+  rectPrefab: {fileID: 0}
+  addBoxColliderIfNoPrefab: 1
+  buildBoundaryWalls: 1
+  wallThickness: 0.08
+  wallsAreTriggers: 0
+  walkableRectCollidersAsTriggers: 1
+--- !u!4 &233266664
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233266662}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.8442097, y: -0.27429363, z: -0.054111388}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &401975497
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,6 +424,7 @@ GameObject:
   - component: {fileID: 936763163}
   - component: {fileID: 936763162}
   - component: {fileID: 936763161}
+  - component: {fileID: 936763166}
   m_Layer: 0
   m_Name: Enemy_Slim1
   m_TagString: Enemy
@@ -378,6 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: 3ff6f262dcb11284d8e2c523d524ae2f, type: 2}
   player: {fileID: 1096964524}
+  stateMachine: {fileID: 0}
 --- !u!61 &936763162
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -517,6 +586,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &936763166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936763160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caab4484c4925034a889b81c8f6aad7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyData: {fileID: 11400000, guid: 3ff6f262dcb11284d8e2c523d524ae2f, type: 2}
+  player: {fileID: 1096964524}
+  hurtDuration: 0.1
+  dieDelay: 1
+  currentState: 0
 --- !u!1 &985358653
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,9 +1077,10 @@ MonoBehaviour:
   sr: {fileID: 1096964523}
   anim: {fileID: 1096964530}
   weaponManager: {fileID: 1096964527}
-  attackCheckCollider: {fileID: 0}
   moveSpeed: 7
   globalAttackCooldown: 0.5
+  maxHealth: 3
+  hurtDuration: 0.15
   currentState: 0
 --- !u!114 &1096964527
 MonoBehaviour:
@@ -1028,6 +1115,7 @@ MonoBehaviour:
   stateMachine: {fileID: 1096964526}
   weaponManager: {fileID: 1096964527}
   switchDuration: 0.3
+  isSwitching: 0
 --- !u!114 &1096964529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1368,3 +1456,4 @@ SceneRoots:
   - {fileID: 1096964524}
   - {fileID: 401975499}
   - {fileID: 936763165}
+  - {fileID: 233266664}
