@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab380c78750828f4bb3392bbd61f4368, type: 3}
+  m_Name: Guai_Data
+  m_EditorClassIdentifier: 
+  weaponType: 2
+  weaponPrefab: {fileID: 6620076907325405389, guid: ead7c1a0ced874f4a838fc9e5a7b49d3, type: 3}
+  attackAnimTrigger: Attack
+  attackDamage: 2
+  attackCooldown: 0.6
+  attackDuration: 0.25

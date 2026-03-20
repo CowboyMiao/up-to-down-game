@@ -99,7 +99,7 @@
             "id": "5f8ac156-72c2-497c-83cd-a9fd611cef65",
             "actions": [
                 {
-                    "name": "weaponSwitch",
+                    "name": "weaponPrimary",
                     "type": "Button",
                     "id": "ec0ccee2-3d11-417c-b367-951f5c4f0b93",
                     "expectedControlType": "",
@@ -115,6 +115,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "weaponSecondary",
+                    "type": "Button",
+                    "id": "d08f5fe3-028b-4c04-a449-98ec9a0e4f19",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -125,18 +134,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "weaponSwitch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "fbc20c5e-82ff-4c80-8595-def1cdb9c59b",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "weaponSwitch",
+                    "action": "weaponPrimary",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -148,6 +146,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "scroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9124a82-14de-4ae5-af3d-1dfe1442ccc1",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "weaponSecondary",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   primaryInitWeapon: {fileID: 11400000, guid: 460fffe6317c8204e9af7e7a0426cb3a, type: 2}
-  secondaryInitWeapon: {fileID: 0}
+  secondaryInitWeapon: {fileID: 11400000, guid: 8bf5d93e15de36b42858cc90eb12628e, type: 2}
 --- !u!4 &401975499
 Transform:
   m_ObjectHideFlags: 0
@@ -410,18 +410,18 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.03841746, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9.6, y: 9.6}
+    oldSize: {x: 2.4, y: 2.4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.6530974, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &936763163
 Rigidbody2D:
@@ -491,7 +491,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: e551a3826321a524985292199cf410b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 910ccd84193ff4949a1f71dbbe4435fd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -512,7 +512,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.2, y: -0.6758508, z: 0}
-  m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -864,18 +864,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.03252387, y: 0.84561956}
+  m_Offset: {x: -0.013314843, y: 0.010038257}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9.6, y: 9.6}
+    oldSize: {x: 2.4, y: 2.4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.0086713, y: 5.1630554}
+  m_Size: {x: 1.6290748, y: 0.91791964}
   m_EdgeRadius: 0
 --- !u!212 &1096964523
 SpriteRenderer:
@@ -918,7 +918,7 @@ SpriteRenderer:
   m_SortingLayerID: 456893591
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 03f87ce11af60a345b3c65eeb9507da2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 85d35790677780a4eb7c296519e14601, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -939,7 +939,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.4702592, y: -0.79586375, z: 0}
-  m_LocalScale: {x: 0.18, y: 0.18, z: 0.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1327537449}
@@ -1010,6 +1010,7 @@ MonoBehaviour:
   weaponPoint: {fileID: 1327537449}
   allWeapons:
   - {fileID: 11400000, guid: 460fffe6317c8204e9af7e7a0426cb3a, type: 2}
+  - {fileID: 11400000, guid: 8bf5d93e15de36b42858cc90eb12628e, type: 2}
   currentWeaponType: 1
   currentWeaponObj: {fileID: 0}
 --- !u!114 &1096964528
@@ -1041,10 +1042,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollWheel: {fileID: -7560908168261827170, guid: e4fca1d6286d0014797d2df924fed5f8, type: 3}
   switchPrimary: {fileID: 3859023911629229466, guid: e4fca1d6286d0014797d2df924fed5f8, type: 3}
-  switchSecondary: {fileID: 3859023911629229466, guid: e4fca1d6286d0014797d2df924fed5f8, type: 3}
-  scrollDeadZone: 0.1
-  scrollAccumulateThreshold: 0.3
-  inputCooldown: 0.1
+  switchSecondary: {fileID: 6686800526411986766, guid: e4fca1d6286d0014797d2df924fed5f8, type: 3}
+  scrollDeadZone: 0.05
+  scrollAccumulateThreshold: 0.1
+  inputCooldown: 0
 --- !u!95 &1096964530
 Animator:
   serializedVersion: 5
@@ -1221,8 +1222,8 @@ Transform:
   m_GameObject: {fileID: 1327537448}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.0541153, y: -0.7, z: 0.40405568}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalPosition: {x: -0.76, y: -0.28, z: 0.40405568}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1096964524}

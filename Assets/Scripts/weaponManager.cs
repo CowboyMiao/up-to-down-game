@@ -33,6 +33,7 @@ public class WeaponManager : MonoBehaviour
         // 强制初始化小刀（确保默认有武器）
         EquipWeapon(WeaponType.Knife);
         Debug.Log("WeaponManager已初始化默认小刀");
+        Debug.Log("PlayerWeaponController Start: 订阅是否成功？");
     }
 
     /// <summary>
@@ -122,27 +123,25 @@ public class WeaponManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 同步武器翻转（删除重复定义，保留优化后的逻辑）
+    /// 同步武器翻转（改用 flipX，只翻转渲染，不旋转物体）
     /// </summary>
-    public void SyncWeaponFlip(bool isFlipped)
+    /// <summary>
+    /// 面向左时：武器随人物翻转 + 层级放到人物下方（背后）
+    /// </summary>
+    public void SyncWeaponFlip(bool isFacingLeft)
     {
         if (currentWeaponObj == null) return;
 
         SpriteRenderer weaponSr = currentWeaponObj.GetComponent<SpriteRenderer>();
-        if (weaponSr != null)
-        {
-            // 优化翻转逻辑：通过旋转+层级调整保证武器显示层级正确
-            if (isFlipped)
-            {
-                currentWeaponObj.transform.localRotation = Quaternion.Euler(0, 180, 0);
-                weaponSr.sortingOrder = -1; // 翻转时武器在人物后方
-            }
-            else
-            {
-                currentWeaponObj.transform.localRotation = Quaternion.identity;
-                weaponSr.sortingOrder = 1; // 正常时武器在人物前方
-            }
-        }
+        if (weaponSr == null) return;
+
+        // 1. 统一翻转 Sprite（Idle 和 Attack 都生效）
+        weaponSr.flipX = isFacingLeft;
+
+        // 2. 层级：面向左时武器在人物背后
+        weaponSr.sortingOrder = isFacingLeft ? 0 : 1;  // 0 就是背后，调成 -1 或 -2 更靠后也可以
+
+        Debug.Log($"武器翻转同步：面向左 = {isFacingLeft}，flipX = {weaponSr.flipX}，Order = {weaponSr.sortingOrder}");
     }
 
     /// <summary>
@@ -169,17 +168,17 @@ public class WeaponManager : MonoBehaviour
             return;
         }
 
-        // 容错：动画Trigger为空时提示
         if (string.IsNullOrEmpty(data.attackAnimTrigger))
         {
             Debug.LogError($"WeaponManager：{currentWeaponType}武器未配置attackAnimTrigger！");
             return;
         }
 
-        // 重置并触发动画（避免连续触发失效）
+        // 重置 + 触发统一 Trigger
         weaponAnim.ResetTrigger(data.attackAnimTrigger);
         weaponAnim.SetTrigger(data.attackAnimTrigger);
-        Debug.Log($"WeaponManager：触发{data.attackAnimTrigger}攻击动画");
+
+        Debug.Log($"WeaponManager：触发统一攻击 Trigger：{data.attackAnimTrigger}（方向由 Right 参数决定）");
     }
 
     /// <summary>

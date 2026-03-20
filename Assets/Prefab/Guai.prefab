@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8261871581753385605}
   - component: {fileID: 997922009449697340}
   m_Layer: 0
-  m_Name: Knife
+  m_Name: Guai
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 6620076907325405389}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.03, y: -0.01, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 456893591
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 9221134197554917090, guid: 3c0d247a6f55d0c49afbd56052ebe5fa, type: 3}
+  m_Sprite: {fileID: -8016789328016252722, guid: 7dceca694955ba140b726b24e40862b1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -148,10 +148,10 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.000000067055225, y: 0.15571156}
+  m_Offset: {x: -0.6821287, y: -0.35186556}
   m_SpriteTilingProperty:
-    border: {x: 0, y: 0.6875, z: 0.71875, w: 0}
-    pivot: {x: 0.2806904, y: 0.6870555}
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 1.1647818, y: 0.83783084}
     oldSize: {x: 1, y: 1}
     newSize: {x: 0.32, y: 0.31}
     adaptiveTilingThreshold: 0.5
@@ -159,7 +159,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.34156257, y: 0.3415627}
+  m_Size: {x: 0.9800533, y: 0.9892406}
   m_EdgeRadius: 0
 --- !u!95 &8261871581753385605
 Animator:
@@ -171,7 +171,7 @@ Animator:
   m_GameObject: {fileID: 6620076907325405389}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0da7f853b5e9a4645a9cecd2d40b096e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 0a6e7a72eb8f7b44e81c526cac0723e0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -203,7 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7340634039551826158}
-  - component: {fileID: 6047992306412426098}
+  - component: {fileID: 7775474999772693101}
   m_Layer: 0
   m_Name: AttackCheck
   m_TagString: Untagged
@@ -220,14 +220,14 @@ Transform:
   m_GameObject: {fileID: 6645585352904899200}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.14, y: -0.15, z: 0.05647831}
+  m_LocalPosition: {x: 0.14, y: 0.312, z: 0.05647831}
   m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8330693870603775876}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &6047992306412426098
-BoxCollider2D:
+--- !u!60 &7775474999772693101
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -268,6 +268,12 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: -3.2815697, y: -0.41683173}
+      - {x: -3.2314086, y: -0.92981577}
+      - {x: -1.2951053, y: -2.8942761}
+      - {x: -0.812265, y: -2.8952827}
+      - {x: -1.0313766, y: -1.5935032}
+      - {x: -3.244407, y: -0.47352982}
+  m_UseDelaunayMesh: 0

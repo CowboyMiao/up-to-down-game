@@ -6,7 +6,8 @@ using UnityEngine;
 public enum WeaponType
 {
     None,
-    Knife
+    Knife,
+    Guai
 }
 
 /// <summary>
