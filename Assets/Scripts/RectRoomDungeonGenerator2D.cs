@@ -58,10 +58,6 @@ public class RectRoomDungeonGenerator2D : MonoBehaviour
 
     [Min(1)] public int connectAttemptsPerSide = 40;
 
-    [Header("Corridor Path Style (legacy)")]
-    [Tooltip("Keep for compatibility with older corridor-building code; it controls L-turn order when connecting rectangles.")]
-    public bool horizontalThenVertical = true;
-
     [Header("Instantiate (optional)")]
     [Tooltip("Parent transform for generated objects.")]
     public Transform generatedRoot;
