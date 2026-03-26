@@ -1,4 +1,4 @@
-# Unity 自动生成文件夹
+# =============== Unity 自动生成文件 ===============
 /Library/
 /Temp/
 /Obj/
@@ -8,8 +8,9 @@
 /UserSettings/
 /Assets/AssetStoreTools*
 
-# 编辑器缓存文件（VS/Rider/VS Code）
+# =============== 编辑器缓存（VS/Rider/VS Code） ===============
 .vs/
+.idea/
 *.csproj
 *.unityproj
 *.sln
@@ -24,7 +25,7 @@
 *.opendb
 *.VC.db
 
-# 系统自动生成文件
+# =============== 系统自动生成文件 ===============
 .DS_Store
 .DS_Store?
 ._*
@@ -32,3 +33,6 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# =============== 其他 ===============
+*.unitypackage
