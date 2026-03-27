@@ -1,37 +1,40 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 /// <summary>
-/// Random rect rooms + rect corridors (top-down 2D).
-/// Rooms and corridors are axis-aligned rectangles in a discrete cell grid.
+/// 随机矩形房间 + 矩形走廊（2D 俯视角）。
+/// 房间/走廊都定义在离散的“格子（cell）”坐标系中。
 /// </summary>
 [DefaultExecutionOrder(-50)]
 public class RectRoomDungeonGenerator2D : MonoBehaviour
 {
-    [Header("Generation")]
+    [Header("生成：房间数量")]
     [Min(1)] public int minRoomCount = 5;
     [Min(1)] public int maxRoomCount = 10;
 
+    [Tooltip("放置房间/走廊的最大尝试次数（越大越不容易生成失败，但会更慢）。")]
     [Min(1)] public int maxPlacementAttempts = 250;
 
-    [Header("Map Bounds (cells)")]
+    [Header("地图边界（单位：格子）")]
     [Min(1)] public int mapWidth = 60;
     [Min(1)] public int mapHeight = 40;
 
-    [Tooltip("World origin for cell (0,0). Usually set to the bottom-left of the map.")]
+    [Tooltip("格子坐标 (0,0) 对应的世界坐标。通常设为地图左下角。")]
     public Vector2 worldOrigin = Vector2.zero;
+    [Tooltip("每个格子的世界尺寸（通常为 1）。会同步到 Grid.cellSize（Tilemap 模式）。")]
     [Min(0.01f)] public float cellSize = 1f;
 
-    [Header("Auto-Run")]
-    [Tooltip("If true, Generate() will be called in Start().")]
+    [Header("自动运行")]
+    [Tooltip("为 true 时：Start() 自动调用 Generate()。")]
     public bool generateOnStart = true;
 
-    [Tooltip("If true, after Generate() it will instantiate room/corridor objects (colliders/visuals).")]
+    [Tooltip("为 true 时：Generate() 后自动调用 InstantiateRectObjects()（生成可视化/碰撞）。")]
     public bool instantiateOnStart = true;
 
-    [Header("Player Placement")]
-    [Tooltip("If true, place/spawn the player at the initial room center during Generate().")]
+    [Header("玩家出生点")]
+    [Tooltip("为 true 时：Generate() 后把玩家放到初始房间中心。")]
     public bool placePlayerOnGenerate = true;
 
     [Tooltip("若赋值：在初始房间中心生成该预制体。")]
@@ -43,19 +46,19 @@ public class RectRoomDungeonGenerator2D : MonoBehaviour
     [Tooltip("仅当未设置 Player Prefab 时生效：移动场景中已有玩家的 Transform。若已设置 Player Prefab，将优先实例化预制体（请留空此项以免误挡实例化）。")]
     public Transform playerTransform;
 
-    [Tooltip("Player tag used when playerTransform is not assigned.")]
+    [Tooltip("当未指定 playerTransform 时，用该 Tag 查找场景内玩家。")]
     public string playerTag = "Player";
 
-    [Header("Room Size (cells)")]
+    [Header("房间尺寸（单位：格子）")]
     [Min(1)] public int roomWidthMin = 6;
     [Min(1)] public int roomWidthMax = 14;
     [Min(1)] public int roomHeightMin = 6;
     [Min(1)] public int roomHeightMax = 14;
 
-    [Tooltip("Extra padding around rooms to avoid overlaps (in cells).")]
+    [Tooltip("房间之间额外间距（单位：格子），用于避免贴太近或重叠。")]
     [Min(0)] public int roomPadding = 1;
 
-    [Header("Corridors")]
+    [Header("走廊参数")]
     [Min(1)] public int corridorWidth = 2;
     [Min(1)] public int corridorLengthMin = 4;
     [Min(1)] public int corridorLengthMax = 18;
@@ -66,46 +69,200 @@ public class RectRoomDungeonGenerator2D : MonoBehaviour
     [Tooltip("为达到目标房间数时，从已有房间随机选边扩展的最大总尝试次数（防止死循环）。")]
     [Min(1)] public int maxExpansionAttempts = 2000;
 
-    [Header("Corridor Path Style (legacy)")]
-    [Tooltip("Keep for compatibility with older corridor-building code; it controls L-turn order when connecting rectangles.")]
+    [Header("走廊拐弯方式（兼容旧逻辑）")]
+    [Tooltip("用于旧的 L 型连廊逻辑：决定连接矩形时先水平后垂直，还是先垂直后水平。")]
     public bool horizontalThenVertical = true;
 
-    [Header("Instantiate (optional)")]
+    [Header("实例化（可选）")]
     [Tooltip("生成内容的父节点：必须拖「场景 Hierarchy」里的物体。不要拖 Project 里的 Prefab 资源，否则会报错且无法生成。")]
     public Transform generatedRoot;
 
-    [Tooltip("If provided, instantiate this prefab for each room/corridor rect (it should have BoxCollider2D or visuals).")]
+    [Tooltip("若指定：每个房间/走廊矩形会实例化该 Prefab（可带 BoxCollider2D/可视化）。")]
     public GameObject rectPrefab;
 
-    [Tooltip("If no prefab is provided, generator will create a GameObject with BoxCollider2D only.")]
+    [Tooltip("若未指定 rectPrefab：将创建仅带 BoxCollider2D 的 GameObject。")]
     public bool addBoxColliderIfNoPrefab = true;
 
-    [Header("Walls & Collision")]
-    [Tooltip("Build wall colliders on the boundary between walkable cells and empty cells.")]
+    [Header("空气墙 / 碰撞（推荐开启）")]
+    [Tooltip("在可走区域与空区域的边界生成墙体 BoxCollider2D（用于挡住玩家）。")]
     public bool buildBoundaryWalls = true;
 
+    [Tooltip("空气墙厚度（世界单位）。")]
     [Min(0.01f)] public float wallThickness = 0.08f;
-    [Tooltip("If true, wall colliders will be triggers (for blocking you typically want false).")]
+    [Tooltip("为 true 时：空气墙 collider 为 Trigger（通常挡人需要 false）。")]
     public bool wallsAreTriggers = false;
 
-    [Tooltip("If we instantiate BoxCollider2D for rooms/corridors, set it as trigger so it won't block internal movement.")]
+    [Tooltip("当实例化房间/走廊矩形 BoxCollider2D 时，将其设置为 Trigger，避免在房间内部卡住。")]
     public bool walkableRectCollidersAsTriggers = true;
 
-    [Header("Floor visualization (Prefab — no Tilemap)")]
-    [Tooltip("If true, instantiate floor prefabs for each room/corridor rect (visual only).")]
+    [Header("地面可视化（Prefab 模式：不使用 Tilemap）")]
+    [Tooltip("为 true 时：用 Prefab 做地面可视化（仅视觉）。")]
     public bool useFloorPrefabs = true;
 
-    [Tooltip("Prefab for room floor: usually a 1x1 unit Sprite/Quad; will be scaled to match rect size in world units.")]
+    [Tooltip("房间地面 Prefab（通常是 1x1 的 Sprite/Quad）。")]
     public GameObject floorRoomPrefab;
 
-    [Tooltip("Optional different look for corridors. If null, uses floorRoomPrefab.")]
+    [Tooltip("走廊地面 Prefab（可空；为空则使用 floorRoomPrefab）。")]
     public GameObject floorCorridorPrefab;
 
-    [Tooltip("When floor prefabs are used, skip the large BoxCollider2D on room/corridor rects (walls still block).")]
+    [Tooltip("当使用地面可视化时，跳过房间/走廊的大矩形 collider（仍保留空气墙挡路）。")]
     public bool hideWalkableColliderWhenFloorPrefab = true;
 
-    [Tooltip("SpriteRenderer sorting order for floor visuals (below player/walls if negative).")]
+    [Tooltip("地面渲染层级（Sorting Order），通常设成比角色/墙更低。")]
     public int floorSortingOrder = -10;
+
+    [Header("地面可视化（Tilemap 模式）")]
+    [Tooltip("为 true 时：把地面刷到 Tilemap（不再实例化地砖 GameObject）。")]
+    public bool useTilemap = false;
+
+    [Tooltip("场景中已有的 Grid（可空；为空会自动创建到 generatedRoot 下）。")]
+    public Grid grid;
+
+    [Tooltip("地面 Tilemap（可空；为空会自动创建到 Grid 下）。")]
+    public Tilemap floorTilemap;
+
+    [Tooltip("地面 TilemapRenderer（可空；为空会自动创建）。")]
+    public TilemapRenderer floorTilemapRenderer;
+
+    [Tooltip("参考地砖 Sprite：用于自动设置 cellSize/Grid.cellSize（不需要改 PPU）。不填则会尝试从 Room Tile 里取 Sprite（仅支持 Tile）。")]
+    public Sprite referenceTileSprite;
+
+    [Serializable]
+    public class TileSet9
+    {
+        [Header("中心")]
+        public TileBase center;
+
+        [Header("边（上/下/左/右）")]
+        public TileBase edgeTop;
+        public TileBase edgeBottom;
+        public TileBase edgeLeft;
+        public TileBase edgeRight;
+
+        [Header("角（左上/右上/左下/右下）")]
+        public TileBase cornerTopLeft;
+        public TileBase cornerTopRight;
+        public TileBase cornerBottomLeft;
+        public TileBase cornerBottomRight;
+    }
+
+    [Tooltip("房间九宫格地砖（角/边/中心）。center 不为空才启用。")]
+    public TileSet9 roomTiles9;
+
+    [Tooltip("走廊九宫格地砖（角/边/中心）。center 不为空才启用。")]
+    public TileSet9 corridorTiles9;
+
+    [Tooltip("备用：未设置房间九宫格时使用的单一地砖。")]
+    public TileBase roomFloorTile;
+
+    [Tooltip("备用：未设置走廊九宫格时使用的单一地砖（为空则使用 roomFloorTile）。")]
+    public TileBase corridorFloorTile;
+
+    [Tooltip("每次生成前是否清空地面 Tilemap。")]
+    public bool clearFloorTilemapBeforePaint = true;
+
+    [ContextMenu("Tilemap：按地砖自动匹配 cellSize")]
+    public void AutoConfigureCellSizeFromTile()
+    {
+        Sprite s = referenceTileSprite;
+        if (s == null)
+        {
+            // Best-effort: only UnityEngine.Tilemaps.Tile exposes sprite directly.
+            var candidate = roomTiles9 != null ? roomTiles9.center : roomFloorTile;
+            s = TryGetSpriteFromTileBase(candidate);
+        }
+
+        if (s == null)
+        {
+            Debug.LogWarning(
+                $"{nameof(RectRoomDungeonGenerator2D)}：无法从 Tile 获取 Sprite。请在 Inspector 指定 referenceTileSprite（拖一张地砖 Sprite 进来），然后再点该按钮。",
+                this);
+            return;
+        }
+
+        Vector2 size = s.bounds.size; // world units, already reflects PPU
+        float newCell = Mathf.Max(0.01f, size.x);
+        if (Mathf.Abs(size.x - size.y) > 1e-3f)
+        {
+            Debug.LogWarning(
+                $"{nameof(RectRoomDungeonGenerator2D)}：参考 Sprite 不是正方形（{size.x:F4} x {size.y:F4} world units）。将使用 X 作为 cellSize：{newCell:F4}。如需不同 X/Y，请手动设置 Grid.cellSize。",
+                this);
+        }
+
+        cellSize = newCell;
+        if (grid != null)
+            grid.cellSize = new Vector3(cellSize, cellSize, 1f);
+
+        Debug.Log($"{nameof(RectRoomDungeonGenerator2D)}：已自动设置 cellSize/Grid.cellSize = {cellSize:F4}（来自 Sprite：{s.name}，PPU={s.pixelsPerUnit}）。", this);
+    }
+
+    private static Sprite TryGetSpriteFromTileBase(TileBase tileBase)
+    {
+        if (tileBase == null) return null;
+        if (tileBase is Tile t) return t.sprite;
+        return null;
+    }
+
+    [Header("墙体可视化（Tilemap，可关闭；你现在用空气墙则不用）")]
+    [Tooltip("为 true 时：在单独的 Tilemap 上绘制墙/边缘瓦片（仅视觉）。若只要空气墙，关闭即可。")]
+    public bool paintWallTiles = false;
+
+    [Tooltip("Optional existing Tilemap for walls/edges; if null, generator will create one under the Grid.")]
+    public Tilemap wallTilemap;
+
+    [Tooltip("Optional TilemapRenderer for walls/edges; if null, will be created with the Tilemap.")]
+    public TilemapRenderer wallTilemapRenderer;
+
+    [Tooltip("If true, clears the wall tilemap before painting.")]
+    public bool clearWallTilemapBeforePaint = true;
+
+    public enum WallTilePlacement
+    {
+        [Tooltip("Place edge tiles on the walkable boundary cell itself (overlay on top of floor).")]
+        OnWalkableCell = 0,
+        [Tooltip("Place edge tiles on the empty neighbor cell outside the walkable area.")]
+        OnEmptyNeighborCell = 1
+    }
+
+    [Tooltip("Where wall tiles should be painted. Most 3D-wall sprites work best as overlay on the boundary floor cell.")]
+    public WallTilePlacement wallTilePlacement = WallTilePlacement.OnWalkableCell;
+
+    [Tooltip("Sorting order for wall visuals (should be above floor).")]
+    public int wallSortingOrder = -5;
+
+    [Tooltip("Wall tile for the top edge (when above is empty).")]
+    public TileBase wallTopTile;
+
+    [Tooltip("Wall tile for the bottom edge (when below is empty).")]
+    public TileBase wallBottomTile;
+
+    [Tooltip("Wall tile for the left edge (when left is empty).")]
+    public TileBase wallLeftTile;
+
+    [Tooltip("Wall tile for the right edge (when right is empty).")]
+    public TileBase wallRightTile;
+
+    [Header("Corner tiles (optional)")]
+    [Tooltip("If true, paint corner tiles (outer + inner). Corner tiles override edge tiles.")]
+    public bool paintCornerTiles = true;
+
+    [Tooltip("Outer corner: top-left (when up and left are empty).")]
+    public TileBase outerCornerTopLeftTile;
+    [Tooltip("Outer corner: top-right (when up and right are empty).")]
+    public TileBase outerCornerTopRightTile;
+    [Tooltip("Outer corner: bottom-left (when down and left are empty).")]
+    public TileBase outerCornerBottomLeftTile;
+    [Tooltip("Outer corner: bottom-right (when down and right are empty).")]
+    public TileBase outerCornerBottomRightTile;
+
+    [Tooltip("Inner corner: top-left (when up and left are walkable but up-left diagonal is empty).")]
+    public TileBase innerCornerTopLeftTile;
+    [Tooltip("Inner corner: top-right (when up and right are walkable but up-right diagonal is empty).")]
+    public TileBase innerCornerTopRightTile;
+    [Tooltip("Inner corner: bottom-left (when down and left are walkable but down-left diagonal is empty).")]
+    public TileBase innerCornerBottomLeftTile;
+    [Tooltip("Inner corner: bottom-right (when down and right are walkable but down-right diagonal is empty).")]
+    public TileBase innerCornerBottomRightTile;
 
     public readonly List<RectInt> GeneratedRooms = new List<RectInt>();
     public readonly List<RectInt> GeneratedCorridors = new List<RectInt>();
@@ -704,17 +861,28 @@ public class RectRoomDungeonGenerator2D : MonoBehaviour
 
         var root = GetInstantiationRoot();
 
-        GameObject corridorFloorPrefab = floorCorridorPrefab != null ? floorCorridorPrefab : floorRoomPrefab;
-        bool floorOk = useFloorPrefabs && floorRoomPrefab != null;
-        if (floorOk)
+        bool tilemapOk = useTilemap && roomFloorTile != null;
+        bool floorPrefabOk = !useTilemap && useFloorPrefabs && floorRoomPrefab != null;
+
+        if (tilemapOk)
         {
+            PaintFloorTilemap(root);
+        }
+        else if (useTilemap && roomFloorTile == null)
+        {
+            Debug.LogWarning($"{nameof(RectRoomDungeonGenerator2D)}：已启用 Tilemap 但未设置 Room Floor Tile（roomFloorTile），将跳过地板绘制。", this);
+        }
+        else if (floorPrefabOk)
+        {
+            GameObject corridorFloorPrefab = floorCorridorPrefab != null ? floorCorridorPrefab : floorRoomPrefab;
             foreach (var r in GeneratedRooms)
                 CreateFloorVisual(root, "Room", r, floorRoomPrefab);
             foreach (var r in GeneratedCorridors)
                 CreateFloorVisual(root, "Corridor", r, corridorFloorPrefab);
         }
 
-        bool skipWalkableCollider = hideWalkableColliderWhenFloorPrefab && floorOk;
+        bool hasAnyFloorVisual = tilemapOk || floorPrefabOk;
+        bool skipWalkableCollider = hideWalkableColliderWhenFloorPrefab && hasAnyFloorVisual;
 
         // Avoid duplicate colliders for corridor overlaps: simple key by rect.
         var created = new HashSet<RectKey>();
@@ -766,6 +934,249 @@ public class RectRoomDungeonGenerator2D : MonoBehaviour
                     else
                         DestroyImmediate(col);
                 }
+            }
+        }
+    }
+
+    private void PaintFloorTilemap(Transform root)
+    {
+        EnsureFloorTilemapExists(root);
+
+        if (floorTilemap == null)
+            return;
+
+        if (clearFloorTilemapBeforePaint)
+            floorTilemap.ClearAllTiles();
+
+        // Corridor tile fallback.
+        TileBase corridorTile = corridorFloorTile != null ? corridorFloorTile : roomFloorTile;
+
+        // 全局可走网格：用于判断某个边是否真的是“外边界”。
+        // 这样房间与走廊连接处不会错误地画出一条完整边（看起来像断层）。
+        bool[,] walkable = BuildWalkableGrid();
+
+        // Paint corridors first, then rooms (room interior should look consistent; corridors only show where not covered by rooms).
+        foreach (var c in GeneratedCorridors)
+        {
+            if (corridorTiles9 != null && corridorTiles9.center != null)
+                PaintRectTiles9ByWalkable(floorTilemap, c, corridorTiles9, walkable);
+            else
+                PaintRectTiles(floorTilemap, c, corridorTile);
+        }
+
+        foreach (var r in GeneratedRooms)
+        {
+            if (roomTiles9 != null && roomTiles9.center != null)
+                PaintRectTiles9ByWalkable(floorTilemap, r, roomTiles9, walkable);
+            else
+                PaintRectTiles(floorTilemap, r, roomFloorTile);
+        }
+
+        floorTilemap.CompressBounds();
+
+        if (paintWallTiles)
+            PaintWallTilemap(root);
+    }
+
+    private void EnsureFloorTilemapExists(Transform root)
+    {
+        // Keep everything under Generated Root so ClearGenerated() can clean it.
+        if (grid == null || !grid.gameObject.scene.IsValid())
+        {
+            var go = new GameObject("RectDungeon_Grid");
+            go.transform.SetParent(root, false);
+            grid = go.AddComponent<Grid>();
+            grid.cellLayout = GridLayout.CellLayout.Rectangle;
+        }
+
+        // Match generator cellSize/worldOrigin to the grid.
+        grid.cellSize = new Vector3(cellSize, cellSize, 1f);
+        grid.transform.position = new Vector3(worldOrigin.x, worldOrigin.y, 0f);
+
+        if (floorTilemap == null || !floorTilemap.gameObject.scene.IsValid())
+        {
+            var go = new GameObject("RectDungeon_FloorTilemap");
+            go.transform.SetParent(grid.transform, false);
+            floorTilemap = go.AddComponent<Tilemap>();
+            floorTilemapRenderer = go.AddComponent<TilemapRenderer>();
+        }
+
+        if (floorTilemapRenderer == null)
+            floorTilemapRenderer = floorTilemap.GetComponent<TilemapRenderer>();
+
+        if (floorTilemapRenderer != null)
+        {
+            floorTilemapRenderer.sortingOrder = floorSortingOrder;
+            floorTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.BottomLeft;
+        }
+    }
+
+    private void EnsureWallTilemapExists(Transform root)
+    {
+        // Wall tilemap shares the same Grid (so it aligns with floor).
+        EnsureFloorTilemapExists(root);
+
+        if (grid == null)
+            return;
+
+        if (wallTilemap == null || !wallTilemap.gameObject.scene.IsValid())
+        {
+            var go = new GameObject("RectDungeon_WallTilemap");
+            go.transform.SetParent(grid.transform, false);
+            wallTilemap = go.AddComponent<Tilemap>();
+            wallTilemapRenderer = go.AddComponent<TilemapRenderer>();
+        }
+
+        if (wallTilemapRenderer == null)
+            wallTilemapRenderer = wallTilemap.GetComponent<TilemapRenderer>();
+
+        if (wallTilemapRenderer != null)
+        {
+            wallTilemapRenderer.sortingOrder = wallSortingOrder;
+            wallTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.BottomLeft;
+        }
+    }
+
+    private void PaintWallTilemap(Transform root)
+    {
+        // Need at least one wall tile to do meaningful work.
+        if (wallTopTile == null && wallBottomTile == null && wallLeftTile == null && wallRightTile == null
+            && outerCornerTopLeftTile == null && outerCornerTopRightTile == null && outerCornerBottomLeftTile == null && outerCornerBottomRightTile == null
+            && innerCornerTopLeftTile == null && innerCornerTopRightTile == null && innerCornerBottomLeftTile == null && innerCornerBottomRightTile == null)
+            return;
+
+        EnsureWallTilemapExists(root);
+        if (wallTilemap == null)
+            return;
+
+        if (clearWallTilemapBeforePaint)
+            wallTilemap.ClearAllTiles();
+
+        bool[,] walkable = BuildWalkableGrid();
+
+        for (int x = 0; x < mapWidth; x++)
+        {
+            for (int y = 0; y < mapHeight; y++)
+            {
+                if (!walkable[x, y]) continue;
+
+                // Neighbor checks: if outside map or not walkable => boundary edge.
+                bool wUp = IsWalkable(walkable, x, y + 1);
+                bool wDown = IsWalkable(walkable, x, y - 1);
+                bool wLeft = IsWalkable(walkable, x - 1, y);
+                bool wRight = IsWalkable(walkable, x + 1, y);
+
+                bool emptyUp = !wUp;
+                bool emptyDown = !wDown;
+                bool emptyLeft = !wLeft;
+                bool emptyRight = !wRight;
+
+                if (emptyUp && wallTopTile != null)
+                    SetWallTile(x, y, 0, 1, wallTopTile);
+                if (emptyDown && wallBottomTile != null)
+                    SetWallTile(x, y, 0, -1, wallBottomTile);
+                if (emptyLeft && wallLeftTile != null)
+                    SetWallTile(x, y, -1, 0, wallLeftTile);
+                if (emptyRight && wallRightTile != null)
+                    SetWallTile(x, y, 1, 0, wallRightTile);
+
+                if (!paintCornerTiles)
+                    continue;
+
+                // Corner tiles override edge tiles (set after edges).
+                // Outer corners: two adjacent sides are empty.
+                if (emptyUp && emptyLeft && outerCornerTopLeftTile != null)
+                    SetCornerTile(x, y, -1, 1, outerCornerTopLeftTile);
+                if (emptyUp && emptyRight && outerCornerTopRightTile != null)
+                    SetCornerTile(x, y, 1, 1, outerCornerTopRightTile);
+                if (emptyDown && emptyLeft && outerCornerBottomLeftTile != null)
+                    SetCornerTile(x, y, -1, -1, outerCornerBottomLeftTile);
+                if (emptyDown && emptyRight && outerCornerBottomRightTile != null)
+                    SetCornerTile(x, y, 1, -1, outerCornerBottomRightTile);
+
+                // Inner corners: both orthogonal neighbors are walkable, but the diagonal is empty.
+                bool wUpLeft = IsWalkable(walkable, x - 1, y + 1);
+                bool wUpRight = IsWalkable(walkable, x + 1, y + 1);
+                bool wDownLeft = IsWalkable(walkable, x - 1, y - 1);
+                bool wDownRight = IsWalkable(walkable, x + 1, y - 1);
+
+                if (wUp && wLeft && !wUpLeft && innerCornerTopLeftTile != null)
+                    SetCornerTile(x, y, -1, 1, innerCornerTopLeftTile);
+                if (wUp && wRight && !wUpRight && innerCornerTopRightTile != null)
+                    SetCornerTile(x, y, 1, 1, innerCornerTopRightTile);
+                if (wDown && wLeft && !wDownLeft && innerCornerBottomLeftTile != null)
+                    SetCornerTile(x, y, -1, -1, innerCornerBottomLeftTile);
+                if (wDown && wRight && !wDownRight && innerCornerBottomRightTile != null)
+                    SetCornerTile(x, y, 1, -1, innerCornerBottomRightTile);
+            }
+        }
+
+        wallTilemap.CompressBounds();
+    }
+
+    private void SetWallTile(int walkableX, int walkableY, int dx, int dy, TileBase tile)
+    {
+        int tx = wallTilePlacement == WallTilePlacement.OnWalkableCell ? walkableX : walkableX + dx;
+        int ty = wallTilePlacement == WallTilePlacement.OnWalkableCell ? walkableY : walkableY + dy;
+        wallTilemap.SetTile(new Vector3Int(tx, ty, 0), tile);
+    }
+
+    private void SetCornerTile(int walkableX, int walkableY, int cornerDx, int cornerDy, TileBase tile)
+    {
+        // When painting on walkable cells, corners are drawn as an overlay on the boundary floor cell.
+        // When painting on empty neighbor cells, corners are drawn on the diagonal neighbor cell.
+        int tx = wallTilePlacement == WallTilePlacement.OnWalkableCell ? walkableX : walkableX + cornerDx;
+        int ty = wallTilePlacement == WallTilePlacement.OnWalkableCell ? walkableY : walkableY + cornerDy;
+        wallTilemap.SetTile(new Vector3Int(tx, ty, 0), tile);
+    }
+
+    private static bool IsWalkable(bool[,] walkable, int x, int y)
+    {
+        if (walkable == null) return false;
+        int w = walkable.GetLength(0);
+        int h = walkable.GetLength(1);
+        if (x < 0 || y < 0 || x >= w || y >= h) return false;
+        return walkable[x, y];
+    }
+
+    private static void PaintRectTiles(Tilemap tilemap, RectInt rect, TileBase tile)
+    {
+        if (tilemap == null || tile == null) return;
+        for (int x = rect.xMin; x < rect.xMax; x++)
+        {
+            for (int y = rect.yMin; y < rect.yMax; y++)
+            {
+                tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+            }
+        }
+    }
+
+    private static void PaintRectTiles9ByWalkable(Tilemap tilemap, RectInt rect, TileSet9 tiles, bool[,] walkable)
+    {
+        if (tilemap == null || tiles == null || tiles.center == null) return;
+
+        for (int x = rect.xMin; x < rect.xMax; x++)
+        {
+            for (int y = rect.yMin; y < rect.yMax; y++)
+            {
+                bool emptyLeft = !IsWalkable(walkable, x - 1, y);
+                bool emptyRight = !IsWalkable(walkable, x + 1, y);
+                bool emptyBottom = !IsWalkable(walkable, x, y - 1);
+                bool emptyTop = !IsWalkable(walkable, x, y + 1);
+
+                TileBase t = tiles.center;
+
+                // 角优先于边：仅当邻接方向真的是“外部空区域”才画角/边。
+                if (emptyTop && emptyLeft && tiles.cornerTopLeft != null) t = tiles.cornerTopLeft;
+                else if (emptyTop && emptyRight && tiles.cornerTopRight != null) t = tiles.cornerTopRight;
+                else if (emptyBottom && emptyLeft && tiles.cornerBottomLeft != null) t = tiles.cornerBottomLeft;
+                else if (emptyBottom && emptyRight && tiles.cornerBottomRight != null) t = tiles.cornerBottomRight;
+                else if (emptyTop && tiles.edgeTop != null) t = tiles.edgeTop;
+                else if (emptyBottom && tiles.edgeBottom != null) t = tiles.edgeBottom;
+                else if (emptyLeft && tiles.edgeLeft != null) t = tiles.edgeLeft;
+                else if (emptyRight && tiles.edgeRight != null) t = tiles.edgeRight;
+
+                tilemap.SetTile(new Vector3Int(x, y, 0), t);
             }
         }
     }
