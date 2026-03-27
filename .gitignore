@@ -1,29 +1,30 @@
 # =============== Unity 自动生成文件 ===============
-/Library/
-/Temp/
-/Obj/
-/Build/
-/Builds/
-/Logs/
-/UserSettings/
-/Assets/AssetStoreTools*
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+Assets/AssetStoreTools*
 
 # =============== 编辑器缓存（VS/Rider/VS Code） ===============
 .vs/
 .idea/
-*.csproj
-*.unityproj
-*.sln
+.vscode/
 *.suo
 *.user
 *.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.mdb
+*.csproj.user
+*.sln.docstates
 *.opendb
 *.VC.db
+
+# （可选）如果你们不想提交 .sln/.csproj，就保留下面三行；否则删掉
+# *.csproj
+# *.sln
+# *.unityproj
 
 # =============== 系统自动生成文件 ===============
 .DS_Store
@@ -33,6 +34,11 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+Desktop.ini
 
 # =============== 其他 ===============
 *.unitypackage
+*.tmp
+*.bak
+*.swp
+sysinfo.txt
