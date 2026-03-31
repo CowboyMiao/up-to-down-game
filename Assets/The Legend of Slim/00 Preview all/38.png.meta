@@ -4,10 +4,14 @@ TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
 <<<<<<< HEAD
+<<<<<<< HEAD
   serializedVersion: 13
 =======
   serializedVersion: 11
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+  serializedVersion: 13
+>>>>>>> upstream/main
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -25,17 +29,25 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
     flipGreenChannel: 0
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+    flipGreenChannel: 0
+>>>>>>> upstream/main
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
   ignoreMipmapLimit: 0
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+  ignoreMipmapLimit: 0
+>>>>>>> upstream/main
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -59,10 +71,14 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
 <<<<<<< HEAD
+<<<<<<< HEAD
   spritePixelsToUnits: 400
 =======
   spritePixelsToUnits: 100
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+  spritePixelsToUnits: 400
+>>>>>>> upstream/main
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -79,10 +95,15 @@ TextureImporter:
   ignorePngGamma: 0
   applyGammaDecoding: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
   swizzle: 50462976
   cookieLightType: 1
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+  swizzle: 50462976
+  cookieLightType: 1
+>>>>>>> upstream/main
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -95,6 +116,9 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/main
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -122,8 +146,11 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
+<<<<<<< HEAD
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+>>>>>>> upstream/main
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
@@ -140,6 +167,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
 <<<<<<< HEAD
+<<<<<<< HEAD
     nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
@@ -148,6 +176,11 @@ TextureImporter:
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+>>>>>>> upstream/main
   userData: 
   assetBundleName: 
   assetBundleVariant: 

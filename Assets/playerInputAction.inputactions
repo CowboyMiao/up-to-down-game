@@ -15,6 +15,9 @@
                     "interactions": "",
                     "initialStateCheck": true
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/main
                 },
                 {
                     "name": "Attack",
@@ -24,8 +27,11 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+<<<<<<< HEAD
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+>>>>>>> upstream/main
                 }
             ],
             "bindings": [
@@ -84,6 +90,9 @@
                     "isComposite": false,
                     "isPartOfComposite": true
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/main
                 },
                 {
                     "name": "",
@@ -163,8 +172,11 @@
                     "action": "weaponSecondary",
                     "isComposite": false,
                     "isPartOfComposite": false
+<<<<<<< HEAD
 =======
 >>>>>>> 3da04a7679d95fb6ab21c5d7f78731e64065c4bd
+=======
+>>>>>>> upstream/main
                 }
             ]
         }

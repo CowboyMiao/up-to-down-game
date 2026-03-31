@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/main
 # =============== Unity 自动生成文件 ===============
 [Ll]ibrary/
 [Tt]emp/
@@ -9,6 +12,7 @@
 UserSettings/
 MemoryCaptures/
 Assets/AssetStoreTools*
+<<<<<<< HEAD
 
 # =============== 编辑器缓存（VS/Rider/VS Code） ===============
 .vs/
@@ -39,32 +43,42 @@ Library/PackageCache/
 /Logs/
 /UserSettings/
 /Assets/AssetStoreTools*
+=======
+>>>>>>> upstream/main
 
-# 编辑器缓存文件（VS/Rider/VS Code）
+# =============== 编辑器缓存（VS/Rider/VS Code） ===============
 .vs/
-*.csproj
-*.unityproj
-*.sln
+.idea/
+.vscode/
 *.suo
 *.user
 *.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.mdb
+*.csproj.user
+*.sln.docstates
 *.opendb
 *.VC.db
 
+<<<<<<< HEAD
 # 系统自动生成文件
 
+=======
+# （可选）如果你们不想提交 .sln/.csproj，就保留下面三行；否则删掉
+# *.csproj
+# *.sln
+# *.unityproj
+
+# =============== 系统自动生成文件 ===============
+>>>>>>> upstream/main
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/main
 Thumbs.db
 Desktop.ini
 
@@ -73,6 +87,10 @@ Desktop.ini
 *.tmp
 *.bak
 *.swp
+<<<<<<< HEAD
 sysinfo.txt
 
 Thumbs.db
+=======
+sysinfo.txt
+>>>>>>> upstream/main
