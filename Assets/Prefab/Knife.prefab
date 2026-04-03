@@ -76,7 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 456893591
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 9221134197554917090, guid: 3c0d247a6f55d0c49afbd56052ebe5fa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 6047992306412426098}
   m_Layer: 0
   m_Name: AttackCheck
-  m_TagString: Untagged
+  m_TagString: AttackCheck
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

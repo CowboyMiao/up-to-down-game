@@ -15,4 +15,6 @@ MonoBehaviour:
   moveSpeed: 2
   maxHealth: 3
   damage: 1
+  defense: 0
   chaseRange: 5
+  hitStunDuration: 0

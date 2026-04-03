@@ -29,33 +29,56 @@ public class EntityHealthBar : MonoBehaviour
 
     private Slider _slider;
     private Vector3 _initialLocalScale;
+    private bool _subscribed;
 
     private void Awake()
     {
         _slider = GetComponent<Slider>() ?? GetComponentInChildren<Slider>(true);
         _initialLocalScale = transform.localScale;
 
-        if (entity == null)
-            entity = GetComponentInParent<Entity>();
+        TryResolveEntity();
+    }
+
+    private void Start()
+    {
+        TryResolveEntity();
+        TrySubscribe();
+        // 处理脚本执行顺序：Entity 可能在其它脚本的 Start 里才 Configure，这里再拉一次当前血量
+        RefreshImmediate();
     }
 
     private void OnEnable()
     {
-        if (entity != null)
-        {
-            entity.OnHealthChanged += HandleHealthChanged;
-            entity.OnDied += HandleDied;
-            RefreshImmediate();
-        }
+        TryResolveEntity();
+        TrySubscribe();
+        RefreshImmediate();
     }
 
     private void OnDisable()
     {
-        if (entity != null)
-        {
-            entity.OnHealthChanged -= HandleHealthChanged;
-            entity.OnDied -= HandleDied;
-        }
+        Unsubscribe();
+    }
+
+    private void TryResolveEntity()
+    {
+        if (entity == null)
+            entity = GetComponentInParent<Entity>();
+    }
+
+    private void TrySubscribe()
+    {
+        if (entity == null || _subscribed) return;
+        entity.OnHealthChanged += HandleHealthChanged;
+        entity.OnDied += HandleDied;
+        _subscribed = true;
+    }
+
+    private void Unsubscribe()
+    {
+        if (entity == null || !_subscribed) return;
+        entity.OnHealthChanged -= HandleHealthChanged;
+        entity.OnDied -= HandleDied;
+        _subscribed = false;
     }
 
     private void LateUpdate()

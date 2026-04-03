@@ -9,10 +9,26 @@ public class EnemyController : MonoBehaviour
     [Header("State Machine")]
     [SerializeField] private EnemyStateMachine stateMachine;
 
+    [Header("碰撞（俯视角）")]
+    [Tooltip("为 true 时：将身上所有 Collider2D 设为 Trigger，避免与玩家 Dynamic Rigidbody2D 互相挤压、卡进体内。依赖地图空气墙挡路；若敌人需要实体推挤请关。")]
+    public bool bodyCollidersAsTriggers = true;
+
+    /// <summary>本敌人上一次已结算的玩家挥击 ID，同一挥击只受击一次。</summary>
+    private int _lastProcessedPlayerSwingId = -1;
+
     private void Awake()
     {
         if (stateMachine == null) stateMachine = GetComponent<EnemyStateMachine>();
         if (stateMachine == null) stateMachine = gameObject.AddComponent<EnemyStateMachine>();
+
+        if (bodyCollidersAsTriggers)
+        {
+            foreach (var c in GetComponentsInChildren<Collider2D>(true))
+            {
+                if (c == null) continue;
+                c.isTrigger = true;
+            }
+        }
     }
 
     private void Start()
@@ -30,13 +46,41 @@ public class EnemyController : MonoBehaviour
         stateMachine?.TakeDamage(damage);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other) => TryTakeDamageFromPlayerAttack(other);
+
+    private void OnTriggerStay2D(Collider2D other) => TryTakeDamageFromPlayerAttack(other);
+
+    /// <summary>由 AttackColliderHitScanner2D 调用；与 Trigger 消息共用同一套挥击 ID 与伤害。</summary>
+    public void TryReceivePlayerWeaponHit(WeaponManager wm, Collider2D attackCheckCollider)
+    {
+        if (wm == null || attackCheckCollider == null)
+            return;
+        if (!attackCheckCollider.CompareTag("AttackCheck"))
+            return;
+
+        int swingId = wm.CurrentAttackSwingId;
+        if (swingId <= 0)
+            return;
+
+        if (_lastProcessedPlayerSwingId == swingId)
+            return;
+
+        _lastProcessedPlayerSwingId = swingId;
+
+        int dmg = ResolveDamageFromPlayerAttack(attackCheckCollider);
+        TakeDamage(dmg);
+    }
+
+    private void TryTakeDamageFromPlayerAttack(Collider2D other)
     {
         if (!other.CompareTag("AttackCheck"))
             return;
 
-        int dmg = ResolveDamageFromPlayerAttack(other);
-        TakeDamage(dmg);
+        var wm = other.GetComponentInParent<WeaponManager>();
+        if (wm == null)
+            return;
+
+        TryReceivePlayerWeaponHit(wm, other);
     }
 
     /// <summary>

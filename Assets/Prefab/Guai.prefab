@@ -76,7 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 456893591
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: -8016789328016252722, guid: 7dceca694955ba140b726b24e40862b1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -151,7 +151,7 @@ BoxCollider2D:
   m_Offset: {x: -0.6821287, y: -0.35186556}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 1.1647818, y: 0.83783084}
+    pivot: {x: 0.7775633, y: 0.45917904}
     oldSize: {x: 1, y: 1}
     newSize: {x: 0.32, y: 0.31}
     adaptiveTilingThreshold: 0.5
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 7775474999772693101}
   m_Layer: 0
   m_Name: AttackCheck
-  m_TagString: Untagged
+  m_TagString: AttackCheck
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

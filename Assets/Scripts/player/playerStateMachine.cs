@@ -205,7 +205,11 @@ public class PlayerStateMachine : MonoBehaviour
 
         weaponManager.PlayWeaponAttackAnimation();
         weaponManager.EnableAttackCollider(true);
-        Invoke(nameof(DisableAttackCollider), 0.2f);
+        float hitDuration = 0.2f;
+        var wd = weaponManager.GetCurrentWeaponData();
+        if (wd != null && wd.attackDuration > 0f)
+            hitDuration = wd.attackDuration;
+        Invoke(nameof(DisableAttackCollider), hitDuration);
     }
 
     void DisableAttackCollider()

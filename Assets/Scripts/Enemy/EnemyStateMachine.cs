@@ -19,7 +19,8 @@ public class EnemyStateMachine : MonoBehaviour
     public Transform player;
 
     [Header("Tuning")]
-    public float hurtDuration = 0.1f;
+    [Tooltip("受击硬直时长（秒）。若 EnemyData.hitStunDuration > 0 则以数据为准。")]
+    public float hurtDuration = 0.15f;
     public float dieDelay = 1f;
 
     [Header("Debug")]
@@ -30,6 +31,9 @@ public class EnemyStateMachine : MonoBehaviour
     private Entity _entity;
     private float _hurtTimer;
     private Coroutine _hitFlashRoutine;
+
+    private float EffectiveHurtDuration =>
+        enemyData != null && enemyData.hitStunDuration > 0f ? enemyData.hitStunDuration : hurtDuration;
 
     private void Awake()
     {
@@ -152,7 +156,7 @@ public class EnemyStateMachine : MonoBehaviour
         // If already hurt, re-apply hurt timer so multiple hits extend the hurt period.
         if (currentState == newState && newState == EnemyState.Hurt)
         {
-            _hurtTimer = hurtDuration;
+            _hurtTimer = EffectiveHurtDuration;
             if (_sr != null) _sr.color = Color.red;
             return;
         }
@@ -179,7 +183,7 @@ public class EnemyStateMachine : MonoBehaviour
 
             case EnemyState.Hurt:
                 if (_rb != null) _rb.velocity = Vector2.zero;
-                _hurtTimer = hurtDuration;
+                _hurtTimer = EffectiveHurtDuration;
                 if (_sr != null) _sr.color = Color.red;
 
                 if (_hitFlashRoutine != null) StopCoroutine(_hitFlashRoutine);
