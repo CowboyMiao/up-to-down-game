@@ -33,6 +33,10 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("????????????")]
     public float hurtDuration = 0.15f;
 
+    [Header("战斗规则")]
+    [Tooltip("默认：攻击中不能移动。若将来需要「移动攻击」，可勾选或子类重写 CanMoveDuringAttack()。")]
+    public bool allowMoveDuringAttack = false;
+
     public PlayerState currentState;
     private float attackTimer;
     private Vector2 moveDirection;
@@ -106,7 +110,20 @@ public class PlayerStateMachine : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isDead || currentState == PlayerState.Attack || currentState == PlayerState.Hurt)
+        if (isDead)
+        {
+            if (rb != null) rb.velocity = Vector2.zero;
+            return;
+        }
+
+        if (currentState == PlayerState.Hurt)
+        {
+            if (rb != null) rb.velocity = Vector2.zero;
+            return;
+        }
+
+        // 攻击中默认锁移动；子类可重写 CanMoveDuringAttack 做例外（如蓄力移动斩）
+        if (currentState == PlayerState.Attack && !CanMoveDuringAttack())
         {
             if (rb != null) rb.velocity = Vector2.zero;
             return;
@@ -117,6 +134,9 @@ public class PlayerStateMachine : MonoBehaviour
             rb.velocity = Vector2.Lerp(rb.velocity, moveDirection.normalized * moveSpeed, Time.fixedDeltaTime * 10f);
         }
     }
+
+    /// <summary>攻击中是否允许移动（默认 false）。子类可重写以实现特殊武器/ Buff。</summary>
+    protected virtual bool CanMoveDuringAttack() => allowMoveDuringAttack;
 
     void UpdateState()
     {
@@ -253,9 +273,20 @@ public class PlayerStateMachine : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        LockInputCompletely();
         rb.velocity = Vector2.zero;
         rb.simulated = false;
         currentState = PlayerState.Dead;
+        weaponManager?.EnableAttackCollider(false);
+        isAttacking = false;
+    }
+
+    private void LockInputCompletely()
+    {
+        _attackButtonActive = false;
+        moveDirection = Vector2.zero;
+        if (playerInput != null)
+            playerInput.DeactivateInput();
     }
 
     public void TakeDamage(int damage)
@@ -263,7 +294,6 @@ public class PlayerStateMachine : MonoBehaviour
         if (isDead) return;
         if (_entity != null && _entity.IsDead) return;
         if (damage <= 0) return;
-        // ?????????????? Stay ????/????????
         if (currentState == PlayerState.Hurt)
             return;
 
@@ -278,7 +308,13 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
-        // Enter Hurt: stop movement/attack for a short duration.
+        // 受击不打断攻击：攻击中只扣血与短暂闪红，不进 Hurt、不关判定、不清 attackTimer
+        if (currentState == PlayerState.Attack)
+        {
+            StartCoroutine(BriefHitFlashDuringAttackRoutine());
+            return;
+        }
+
         currentState = PlayerState.Hurt;
         hurtTimer = hurtDuration;
         attackTimer = 0f;
@@ -288,6 +324,16 @@ public class PlayerStateMachine : MonoBehaviour
         if (sr != null) sr.color = Color.red;
 
         StartCoroutine(HitFlashRoutine());
+    }
+
+    private IEnumerator BriefHitFlashDuringAttackRoutine()
+    {
+        if (sr == null) yield break;
+        Color prev = sr.color;
+        sr.color = Color.red;
+        yield return new WaitForSeconds(0.08f);
+        if (!isDead && currentState == PlayerState.Attack && sr != null)
+            sr.color = prev;
     }
 
     private IEnumerator HitFlashRoutine()
