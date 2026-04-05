@@ -54,6 +54,15 @@ public class EnemyStateMachine : MonoBehaviour
         _entity = GetComponent<Entity>();
         if (_entity == null)
             _entity = gameObject.AddComponent<Entity>();
+
+        // Dynamic + velocity 追逐会与玩家的 Dynamic 实体碰撞在多次受击/击退后产生不稳定挤压（像「突破」后卡死）。
+        // Kinematic + MovePosition：不参与动态刚体间求解，仍可与 Trigger 重叠做伤害判定；地图墙若需挡怪请用非 Trigger 碰撞体。
+        if (_rb != null)
+        {
+            _rb.bodyType = RigidbodyType2D.Kinematic;
+            _rb.gravityScale = 0f;
+            _rb.velocity = Vector2.zero;
+        }
     }
 
     private void Start()
@@ -94,6 +103,50 @@ public class EnemyStateMachine : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (currentState == EnemyState.Dead) return;
+        if (_rb == null || enemyData == null || player == null) return;
+
+        if (currentState == EnemyState.Chase)
+            MoveChaseTowardPlayer();
+    }
+
+    /// <summary>
+    /// 追逐时保持与玩家的最小距离：双方相向移动时否则会每帧「顶」进同一位置，体感像突破一层后卡住。
+    /// </summary>
+    private void MoveChaseTowardPlayer()
+    {
+        Vector2 playerPos = player.position;
+        Vector2 delta = playerPos - _rb.position;
+        float dist = delta.magnitude;
+        if (dist > enemyData.chaseRange)
+            return;
+        if (dist < 1e-6f)
+            return;
+
+        // 旧数据里若未序列化该字段会为 0，回退到默认环距
+        float minSep = enemyData.minSeparationFromPlayer > 0.01f
+            ? Mathf.Max(0.05f, enemyData.minSeparationFromPlayer)
+            : 0.55f;
+        Vector2 dir = delta / dist;
+
+        // 已比最小距离更近：先把自身摆回环上，避免与玩家中心重叠
+        if (dist < minSep)
+        {
+            _rb.MovePosition(playerPos - dir * minSep);
+            return;
+        }
+
+        float step = enemyData.moveSpeed * Time.fixedDeltaTime;
+        float nextDist = dist - step;
+        if (nextDist < minSep)
+            step = Mathf.Max(0f, dist - minSep);
+
+        if (step > 1e-6f)
+            _rb.MovePosition(_rb.position + dir * step);
+    }
+
     private void TickIdle()
     {
         if (_rb != null) _rb.velocity = Vector2.zero;
@@ -115,7 +168,6 @@ public class EnemyStateMachine : MonoBehaviour
         }
 
         Vector2 moveDir = (player.position - transform.position).normalized;
-        if (_rb != null) _rb.velocity = moveDir * enemyData.moveSpeed;
         if (_sr != null) _sr.flipX = moveDir.x < 0;
     }
 

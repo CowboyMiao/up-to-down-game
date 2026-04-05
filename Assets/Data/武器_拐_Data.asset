@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab380c78750828f4bb3392bbd61f4368, type: 3}
-  m_Name: Knife_Data
+  m_Name: 武器_拐_Data
   m_EditorClassIdentifier: 
-  weaponType: 1
-  weaponPrefab: {fileID: 6620076907325405389, guid: fcd44e502d679af418e6e1a8e4bedae4, type: 3}
+  weaponType: 2
+  weaponPrefab: {fileID: 6620076907325405389, guid: ead7c1a0ced874f4a838fc9e5a7b49d3, type: 3}
   attackAnimTrigger: Attack
-  attackDamage: 1
-  attackCooldown: 0.5
+  attackDamage: 2
+  attackCooldown: 0.6
+  attackDuration: 0.9166667

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9042165204063784476}
   - component: {fileID: 2272762522057700515}
   - component: {fileID: 9132076564737767653}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 6949132070185297766}
   - component: {fileID: 3908022793418004695}
   - component: {fileID: 426492609936814920}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 8075210158625828411}
   - component: {fileID: 4995167436305348731}
   - component: {fileID: 3257613033395637024}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7587529682607846793}
   - component: {fileID: 6094079367295005584}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Entity_Stats_UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,6 +303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entity: {fileID: 2444372427916508772}
+  entityRootOverride: {fileID: 0}
   cancelParentScaleFlip: 1
   onlyCompensateScaleX: 1
   minParentScaleAbs: 0.25
@@ -328,7 +329,7 @@ GameObject:
   - component: {fileID: -5340091311537654269}
   - component: {fileID: -5317612968920355219}
   - component: {fileID: 2444372427916508772}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -482,6 +483,8 @@ MonoBehaviour:
   combatStats: {fileID: 11400000, guid: 4c9d3e2d2e160ac4a9231ba9a11d210e, type: 2}
   maxHealth: 3
   hurtDuration: 0.15
+  allowMoveDuringAttack: 1
+  hurtKnockbackSpeed: 5.5
   currentState: 0
 --- !u!114 &5053055345213439096
 MonoBehaviour:
@@ -585,7 +588,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.006782055, y: 0}
@@ -604,6 +607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  autoSolidColliderRadius: 0.35
   damageCooldownPerEnemy: 0.4
   requireEnemyTag: 1
 --- !u!114 &2444372427916508772
@@ -630,7 +634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8449868350934244653}
   - component: {fileID: 8550560544981230408}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -717,7 +721,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4552970829712962605}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: WeaponPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

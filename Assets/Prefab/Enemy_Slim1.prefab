@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4785817844274463350}
   - component: {fileID: 3235162149083070032}
   - component: {fileID: 7602268718052423530}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,7 +112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4268184261275519175}
   - component: {fileID: 5000056848840368911}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Entity_Stats_UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 8351380658088263390}
   - component: {fileID: 5154150089550259355}
   - component: {fileID: 1555496261587008057}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 4811118111899036349}
   - component: {fileID: 8933025065595529824}
   - component: {fileID: 3056381153074892997}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 6125136496519116180}
   - component: {fileID: 6246609630213672491}
   - component: {fileID: -5800013131929861728}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy_Slim1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -536,7 +536,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6757837741882141227}
   - component: {fileID: 5023328820577222929}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

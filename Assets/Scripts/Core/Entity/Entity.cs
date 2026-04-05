@@ -9,6 +9,7 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     [Header("默认值（若在 Start 前被 Configure 覆盖则以配置为准）")]
+    [Tooltip("默认 3 且敌人伤害为 1 时，第三次受伤会死亡（PlayerStateMachine.Die 会停用输入与刚体）。")]
     [Min(1)] public int maxHealth = 3;
 
     [Min(0f)]

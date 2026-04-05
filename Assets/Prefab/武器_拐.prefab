@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 4820155075933023664}
   - component: {fileID: 8261871581753385605}
   - component: {fileID: 997922009449697340}
-  m_Layer: 0
-  m_Name: Guai
+  m_Layer: 9
+  m_Name: 武器_拐
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7340634039551826158}
   - component: {fileID: 7775474999772693101}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: AttackCheck
   m_TagString: AttackCheck
   m_Icon: {fileID: 0}

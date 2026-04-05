@@ -1,30 +1,32 @@
 using UnityEngine;
 
 /// <summary>
-/// 武器类型枚举
+/// ???????????
 /// </summary>
 public enum WeaponType
 {
     None,
+    [InspectorName("武器·刀")]
     Knife,
+    [InspectorName("武器·拐")]
     Guai
 }
 
 /// <summary>
-/// 武器数据（可在Project面板创建配置文件）
+/// ?????????????Project??崴???????????
 /// </summary>
-[CreateAssetMenu(fileName = "WeaponData", menuName = "GameData/WeaponData", order = 1)]
+[CreateAssetMenu(fileName = "????_Data", menuName = "GameData/WeaponData", order = 1)]
 public class WeaponData : ScriptableObject
 {
-    [Header("基础配置")]
+    [Header("????????")]
     public WeaponType weaponType;
     public GameObject weaponPrefab;
-    [Tooltip("武器Animator的攻击Trigger名称（必须与动画控制器一致）")]
-    public string attackAnimTrigger = "Attack"; // 默认值，避免空字符串
+    [Tooltip("????Animator?????Trigger???????????????????????")]
+    public string attackAnimTrigger = "Attack"; // ????????????????
 
-    [Header("战斗参数")]
+    [Header("???????")]
     public int attackDamage = 1;
     public float attackCooldown = 0.5f;
-    [Tooltip("攻击判定持续时间（碰撞体开启时长）")]
-    public float attackDuration = 0.2f; // 新增：攻击判定时长，默认0.2秒
+    [Tooltip("攻击碰撞体保持开启的时长（秒）。应与挥击动画长度一致；明显短于动画时，只有挥击前半段能打出伤害。")]
+    public float attackDuration = 0.92f;
 }

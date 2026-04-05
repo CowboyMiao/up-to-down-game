@@ -17,4 +17,5 @@ MonoBehaviour:
   damage: 1
   defense: 0
   chaseRange: 5
+  minSeparationFromPlayer: 0.55
   hitStunDuration: 0

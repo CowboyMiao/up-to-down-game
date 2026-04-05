@@ -268,8 +268,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs:
   - {fileID: 5454154464641267985, guid: 1f922ae3f8929e040bbe930ae08a4fdf, type: 3}
-  enemiesPerRoomMin: 4
-  enemiesPerRoomMax: 10
+  enemiesPerRoomMin: 2
+  enemiesPerRoomMax: 4
   spawnInsetCells: 1
   minSpawnDistanceFromPlayer: 2.5
   skipInitialRoom: 1

@@ -12,6 +12,9 @@ public class EntityHealthBar : MonoBehaviour
     [Tooltip("为空则从父级查找 Entity")]
     [SerializeField] private Entity entity;
 
+    [Tooltip("血条若挂在屏幕 Canvas 等不在角色父级链上时，必须指定挂有 Entity 的角色根物体；否则血条不会订阅血量变化。")]
+    [SerializeField] private Transform entityRootOverride;
+
     [Header("翻转")]
     [Tooltip("为 true 时，每帧根据父级 lossyScale 修正本物体 localScale，使血条不被水平镜像")]
     [SerializeField] private bool cancelParentScaleFlip = true;
@@ -30,13 +33,24 @@ public class EntityHealthBar : MonoBehaviour
     private Slider _slider;
     private Vector3 _initialLocalScale;
     private bool _subscribed;
+    private bool _warnedMissingEntity;
 
     private void Awake()
     {
-        _slider = GetComponent<Slider>() ?? GetComponentInChildren<Slider>(true);
+        ResolveSliderReference();
         _initialLocalScale = transform.localScale;
 
         TryResolveEntity();
+    }
+
+    /// <summary>
+    /// Slider 可能在父物体上（常见 UI：Slider 根下再挂血条脚本子物体），仅查子级会拿不到。
+    /// </summary>
+    private void ResolveSliderReference()
+    {
+        _slider = GetComponent<Slider>()
+                  ?? GetComponentInChildren<Slider>(true)
+                  ?? GetComponentInParent<Slider>();
     }
 
     private void Start()
@@ -61,8 +75,26 @@ public class EntityHealthBar : MonoBehaviour
 
     private void TryResolveEntity()
     {
+        if (entity != null)
+            return;
+        if (entityRootOverride != null)
+            entity = entityRootOverride.GetComponent<Entity>();
         if (entity == null)
             entity = GetComponentInParent<Entity>();
+        // 血条挂在 Canvas 下时找不到父级 Entity：先按 Player 标签，再按场景里唯一的 PlayerStateMachine（无需改 Tag）
+        // 运行时实例化玩家（如地牢生成）可能晚于本物体 Start：不限帧数持续解析。
+        if (entity == null)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null)
+                entity = p.GetComponent<Entity>();
+            if (entity == null)
+            {
+                var psm = Object.FindObjectOfType<PlayerStateMachine>();
+                if (psm != null)
+                    entity = psm.GetComponent<Entity>();
+            }
+        }
     }
 
     private void TrySubscribe()
@@ -83,6 +115,23 @@ public class EntityHealthBar : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!_subscribed || entity == null)
+        {
+            TryResolveEntity();
+            if (entity != null && !_subscribed)
+            {
+                TrySubscribe();
+                RefreshImmediate();
+            }
+            else if (entity == null && !_warnedMissingEntity && Time.frameCount > 300)
+            {
+                _warnedMissingEntity = true;
+                Debug.LogWarning(
+                    $"{nameof(EntityHealthBar)}：仍未找到 Entity。若血条挂在 Canvas 下，请在 Inspector 指定「Entity Root Override」为玩家/敌人根物体，或把血条放到角色子物体下。",
+                    this);
+            }
+        }
+
         if (cancelParentScaleFlip && transform.parent != null)
             CompensateParentFlip();
     }
@@ -143,7 +192,7 @@ public class EntityHealthBar : MonoBehaviour
     {
         if (entity == null) return;
         if (_slider == null)
-            _slider = GetComponent<Slider>() ?? GetComponentInChildren<Slider>(true);
+            ResolveSliderReference();
         if (_slider == null) return;
         ApplySlider(entity.CurrentHealth, entity.MaxHealth);
     }
@@ -160,7 +209,12 @@ public class EntityHealthBar : MonoBehaviour
     private void OnValidate()
     {
         if (entity == null)
-            entity = GetComponentInParent<Entity>();
+        {
+            if (entityRootOverride != null)
+                entity = entityRootOverride.GetComponent<Entity>();
+            if (entity == null)
+                entity = GetComponentInParent<Entity>();
+        }
     }
 #endif
 }
